@@ -102,9 +102,14 @@ exports.readSQLDataSingle = function(querytype, callback, extra_conditions)
 			{
 				queryString = 'select f.severity,l.location as loc, count(*) from ne_fault f, ne_location l where l.ne_id = f.ne_id group by f.severity, l.location order by f.severity_int asc';
 			}
-			else if(querytype === "GetUser"){
+			else if(querytype === 'GetUser'){
 				queryString = 'SELECT * FROM users WHERE username = \"' + extra_conditions + '\"';
-			}		
+			}else if(querytype === 'UpdateUserLogInCount'){
+				queryString = 'UPDATE users SET count = ' + extra_conditions;
+				// queryString = 'UPDATE users SET count = 388 WHERE username = \"amrit\"';
+			}else if(querytype === 'UpdateUserLastLogInDate'){
+				queryString = 'UPDATE users SET lastlogin = ' + extra_conditions;
+			}	
 			mysql.handle_database(queryString,callback);
 		
 		}

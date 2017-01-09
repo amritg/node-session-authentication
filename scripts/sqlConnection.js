@@ -33,8 +33,15 @@
 				connection.query(req,function(err,rows){
 					connection.release();
 					if(!err) {
-						data = rows.slice();					
-						callback(data);
+						if(rows.constructor === Array){
+							data = rows.slice();
+							console.log(data);					
+							callback(data);
+						}else{
+							// console.log(rows);
+							console.log(typeof(rows.affectedRows));
+							callback(rows);
+						}
 						//res.json(rows);
 					}           
 				});
