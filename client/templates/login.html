@@ -1,26 +1,18 @@
-<div class="lock-wrapper" data-ng-controller="SignInCtrl">
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>LogIn Page</title>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="./styles/styles.css">
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  
-</head>
-<body>
-    <div class="container main-body">
-        <p>This is test.</p>
-    </div>
-</body>
-</html>
-
-
+<div>
+    {{name}}
+    {{user.username}}
+    {{user.password}}
+    <form ng-submit="logInUser(user)">
+      <div class="form-group">
+          <input type="text" placeholder="Username" class="form-control" ng-model="user.username">
+      </div>
+      <div class="form-group">
+          <input type="password" placeholder="Password" class="form-control" ng-model="user.password">
+      </div>
+      <input type="submit" class="btn btn-default" value="Log In">
+    </form> 
+    <a ui-sref="home">Home page</a>
+</div>
 <!--
 <div cg-busy="{promise:myPromise,backdrop:false,minDuration:1000,message:'Signing in ... Please Wait'}"></div>
 

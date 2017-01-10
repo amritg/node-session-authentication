@@ -35,11 +35,11 @@
 					if(!err) {
 						if(rows.constructor === Array){
 							data = rows.slice();
-							console.log(data);					
+							//console.log(data);					
 							callback(data);
 						}else{
 							// console.log(rows);
-							console.log(typeof(rows.affectedRows));
+							//console.log(typeof(rows.affectedRows));
 							callback(rows);
 						}
 						//res.json(rows);

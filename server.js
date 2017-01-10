@@ -41,7 +41,6 @@ app.use(passport.session());
 
 passport.use(new LocalStrategy(
     function(username,password,done){
-
         mysql.readSQLDataSingle("GetUser",function(){ 
             // console.log("Data from mysql server: " + data);
             if(!data.length){   // If no user is found
@@ -55,66 +54,32 @@ passport.use(new LocalStrategy(
                     var userDetails = data[0];
                     var oldCount = data[0].count;
                     var newCount = oldCount + 1;
-                    // var sql_updateCount = newCount + ' WHERE username = \"' + userDetails.username + '\"';
 
                     var newLoginDate = new Date().toISOString().slice(0, 19).replace('T',' ');
-                    console.log(newLoginDate);
-                    // var sql_updateLastLogin = newLoginDate + ' WHERE username = \"' + userDetails.username + '\"';
-                    var sql_updateCount = newCount +', lastlogin = \"'+ newLoginDate +'\" WHERE username = \"' + userDetails.username + '\"';
-                    console.log(sql_updateCount);
+                    var sql_updateDateCount = newCount +', lastlogin = \"'+ newLoginDate +'\" WHERE username = \"' + userDetails.username + '\"';
+                    // console.log(sql_updateDateCount);
                     mysql.readSQLDataSingle("UpdateUserLogInCount",function(){
-                            return done(null, userDetails);
-                        // mysql.readSQLDataSingle("UpdateUserLastLogInDate",function(){
-                        //     console.log("InsideUpdateLastLogInDate");
-                        //     // console.log(row);
-                        //     return done(null, userDetails);
-                        // },sql_updateLastLogin);
-
-                    },sql_updateCount);
+                            console.log("Return from db");
+                            console.log(userDetails);
+                            return done(null,{user: userDetails.username});
+                            // return done(null,{user: userDetails.username, lastlogin: userDetails.lastlogin});
+                    },sql_updateDateCount);
+                }
             }
-        }
-        
-        },username);  
-        // connection.query('SELECT * FROM users WHERE username = ?',[username],function(err, rows){
-        //     if(err){
-        //         return done(err);
-        //     }
-        //     // If no user is found
-        //     if(!rows.length){
-        //         return done(null,false);
-        //     }else{
-        //         // If user is found but Password is incorrect
-        //         if(password != rows[0].password){
-        //             console.log(rows[0].id + ' ' + rows[0].username + '' + rows[0].count);
-        //             return done(null,false);
-        //         }else{
-        //             // return User Info if password matches
-        //             // console.log(rows[0].id + ' ' + rows[0].username + '' + rows[0].count);
-        //             var userDetails = rows[0];
-        //             console.log(userDetails);
-        //             var oldCount = rows[0].count;
-        //             var newCount = oldCount + 1;
-        //             connection.query('UPDATE users SET count = ? WHERE username=?',[newCount, username],function(err, rows){
-        //                 console.log(userDetails);
-        //                 console.log('Updated Count');
-        //                 return done(null, userDetails);
-        //             });
-                    
-                    
-        //         }
-        //     }
-        // });
+        },username);
     }
 ));
 passport.serializeUser(function(user,done){
-    done(null, user.username);
+    // console.log('In serializeUser');
+    // console.log(user);
+    done(null, user);
 });
-passport.deserializeUser(function(username, done){
-    console.log("username from session: " + username);
+passport.deserializeUser(function(user, done){
+    // console.log('In deserializeUser');
+    // console.log(user);
     mysql.readSQLDataSingle("GetUser", function(){
-        console.log("Deserialize info: " + data[0].username);
         done("",data);
-    },username);
+    },user);
 });
 
 
@@ -130,20 +95,23 @@ function restrictAccess(req,res,next){
 // *** Routes ** //
 
 app.get('/', function(req,res,next){
-    console.log(req.session);
     res.sendFile(path.join(__dirname + '/client/login.html'));
 });
 app.get('/index',restrictAccess, function(req,res,next){
     res.sendFile(path.join(__dirname + '/client/index.html'));
-    // res.json(req.user);
 });
-app.get('/page1', restrictAccess, function(req,res,next){
-    res.sendFile(path.join(__dirname + '/client/page1.html'));
-});
-app.post('/login', passport.authenticate('local',{ successRedirect: '/index',
+app.post('/login', passport.authenticate('local',{ successRedirect: '/home',
                                                     failureRedirect: '/',
                                                     failureFlash: true })
 );
+// app.post('/logIn', passport.authenticate('local'),function(req,res,next){
+//     console.log('After authentication:');
+//     console.log(req.body);
+//     console.log(req.user);
+//     // console.log(req.lastlogin);
+//     res.json(req.user);
+//     next();
+// });
 app.get('/logout', function(req,res,next){
     req.logout();
     res.redirect('/');
