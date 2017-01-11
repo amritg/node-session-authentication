@@ -10,6 +10,7 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var session = require('express-session');
 var SessionFileStore = require('session-file-store')(session);
+var flash = require('connect-flash');
 
 // *** DATABASE THINGS *** //
 
@@ -34,6 +35,7 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 
 
 // *** Passport Authentication ***/
@@ -48,7 +50,7 @@ passport.use(new LocalStrategy(
             }else{
                 // If user is found but Password is incorrect
                 if(password != data[0].password){
-                    return done(null,false);
+                    return done(null,false,req.flash('logInError','Invalid Username OR Password.'));
                 }else{
                     // Return User Info if password matches
                     var userDetails = data[0];
@@ -116,6 +118,7 @@ app.post('/login', passport.authenticate('local'),function(req,res,next){
     console.log('After authentication:');
     console.log(req.body);
     console.log(req.user);
+    console.log(req.flash);
     res.send(req.user);
     next();
 });

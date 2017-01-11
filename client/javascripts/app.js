@@ -7,8 +7,18 @@
             password: "",
         }
         $scope.logInUser = function(user){
-            $http.post('/login', user).success(function(response){
+            $http.post('/login', user).then(function(response){
+                console.log('Success response:');
+                console.log(response);
                 $location.path('/home');
+            }, function(response){
+                console.log('Error response:');
+                console.log(response);
+                $scope.user = {
+                    username: "",
+                    password: "",
+                }
+                $location.path('/login');
             });
         }
         $scope.logout = function(){
@@ -58,8 +68,7 @@
     ]);
     var checkLoggedIn = function($q, $http, $location, $rootScope){
         var deferred = $q.defer();
-        $http.get('/loggedIn').success(function(user)
-        {
+        $http.get('/loggedIn').success(function(user){
             $rootScope.errorMessage = null;
             // User is Authenticated
             if (user !== '0')
