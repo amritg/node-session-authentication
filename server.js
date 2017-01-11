@@ -89,32 +89,39 @@ function restrictAccess(req,res,next){
     if(req.isAuthenticated()){
         return next();
     }
-    res.redirect('/'); // If not Authenticated, redirect to Home page
+    else{
+        res.sendStatus(401);  // If not Authenticated, redirect to Home page
+    }
+    // res.redirect('/'); // If not Authenticated, redirect to Home page
 }
 
 // *** Routes ** //
 
-app.get('/', function(req,res,next){
-    res.sendFile(path.join(__dirname + '/client/login.html'));
-});
-app.get('/index',restrictAccess, function(req,res,next){
-    res.sendFile(path.join(__dirname + '/client/index.html'));
-});
-app.post('/login', passport.authenticate('local',{ successRedirect: '/home',
-                                                    failureRedirect: '/',
-                                                    failureFlash: true })
-);
-// app.post('/logIn', passport.authenticate('local'),function(req,res,next){
-//     console.log('After authentication:');
-//     console.log(req.body);
-//     console.log(req.user);
-//     // console.log(req.lastlogin);
-//     res.json(req.user);
-//     next();
+// app.get('/', function(req,res,next){
+//     res.sendFile(path.join(__dirname + '/client/login.html'));
 // });
+// app.get('/index',restrictAccess, function(req,res,next){
+//     res.sendFile(path.join(__dirname + '/client/index.html'));
+// });
+// app.post('/login', passport.authenticate('local',{ successRedirect: '/home',
+//                                                     failureRedirect: '/',
+//                                                     failureFlash: true })
+// );
+
+app.get('/loggedIn',function(req, res){
+    res.send(req.isAuthenticated() ? req.user : '0');
+});
+
+app.post('/login', passport.authenticate('local'),function(req,res,next){
+    console.log('After authentication:');
+    console.log(req.body);
+    console.log(req.user);
+    res.send(req.user);
+    next();
+});
 app.get('/logout', function(req,res,next){
     req.logout();
-    res.redirect('/');
+    res.sendStatus(200);
 });
 
 // *** Launch Application ** //
